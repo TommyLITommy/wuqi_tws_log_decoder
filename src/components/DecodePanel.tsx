@@ -212,6 +212,8 @@ const BADGE_COLORS: Record<string, string> = {
   btn: 'lime',
   appmsg: 'geekblue',
   state: 'gold',
+  a2dp: 'green',
+  profile: 'volcano',
 };
 
 const DecodePanel = forwardRef<DecodePanelHandle, DecodePanelProps>(

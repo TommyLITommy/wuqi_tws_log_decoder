@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { parseLogLine } from '@/parsers/registry';
 import { toDecodedResult } from '@/parsers/adapter';
-import type { LogEntry, DecodedResult } from '@/types';
+import { buildStatusCheckpoints } from '@/utils/statusSnapshot';
+import type { LogEntry, DecodedResult, StatusCheckpoint } from '@/types';
 
 // ==================== 常量配置 ====================
 const READER_CHUNK_SIZE = 1024 * 1024; // 1MB分块读取
@@ -47,6 +48,8 @@ export function useLogData() {
   const [currentFileName, setCurrentFileName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [statusCheckpoints, setStatusCheckpoints] = useState<StatusCheckpoint[]>([]);
+  const [logLines, setLogLines] = useState<string[]>([]);
 
   // ==================== 工具函数 ====================
   /**
@@ -185,6 +188,8 @@ export function useLogData() {
 
         // 更新状态
         setAllLogs(parsedLogs);
+        setLogLines(logLines);
+        setStatusCheckpoints(buildStatusCheckpoints(logLines));
         setCoreFilter(DEFAULT_CORE_FILTER);
         setFilteredIndices(computeFilteredIndices(parsedLogs, '', DEFAULT_CORE_FILTER));
         setSelectedId(null);
@@ -231,6 +236,8 @@ export function useLogData() {
    */
   const clearAll = useCallback(() => {
     setAllLogs([]);
+    setLogLines([]);
+    setStatusCheckpoints([]);
     setFilteredIndices([]);
     setFilterText('');
     setCoreFilter(DEFAULT_CORE_FILTER);
@@ -268,6 +275,8 @@ export function useLogData() {
   return {
     // 数据源
     allLogs,
+    logLines,
+    statusCheckpoints,
     filteredLogs, // 新增：直接提供过滤后的日志，组件更易用
     // 过滤状态
     filteredIndices,

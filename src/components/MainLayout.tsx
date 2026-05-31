@@ -1,14 +1,18 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import LogPanel from '@/components/LogPanel';
 import DecodePanel from '@/components/DecodePanel';
 import ThumbPanel from '@/components/ThumbPanel';
+import StatusPanel from '@/components/StatusPanel';
 import Resizer from '@/components/Resizer';
-import type { LogEntry } from '@/types';
+import type { LogEntry, StatusCheckpoint } from '@/types';
 import type { LogPanelHandle } from '@/components/LogPanel';
 import type { DecodePanelHandle } from '@/components/DecodePanel';
+import { getStatusAtLine, getViewportEndLogIndex } from '@/utils/statusSnapshot';
 
 interface MainLayoutProps {
   allLogs: LogEntry[];
+  logLines: string[];
+  statusCheckpoints: StatusCheckpoint[];
   filteredIndices: number[];
   selectedId: number | null;
   filterText: string;
@@ -19,7 +23,7 @@ interface MainLayoutProps {
   startResizeThumb: () => void;
 }
 
-export default function MainLayout({ allLogs, filteredIndices, selectedId, filterText, leftWidth, thumbWidth,
+export default function MainLayout({ allLogs, logLines, statusCheckpoints, filteredIndices, selectedId, filterText, leftWidth, thumbWidth,
   onSelectRow, startResizeLeft, startResizeThumb }: MainLayoutProps) {
   const [syncedScrollTop, setSyncedScrollTop] = useState(0);
   const [scrollInfo, setScrollInfo] = useState({ scrollHeight: 1, clientHeight: 1 });
@@ -70,7 +74,15 @@ export default function MainLayout({ allLogs, filteredIndices, selectedId, filte
       leftPanelRef.current?.scrollTo(targetScroll);
       decodePanelRef.current?.scrollTo(targetScroll);
     }
+    return targetIdx;
   }, [filteredIndices]);
+
+  const handleStatusNavigate = useCallback((lineIndex: number) => {
+    const targetIdx = handleJumpTo(lineIndex);
+    if (targetIdx >= 0) {
+      onSelectRow(filteredIndices[targetIdx], targetIdx);
+    }
+  }, [handleJumpTo, filteredIndices, onSelectRow]);
 
   const handleThumbScrollTo = useCallback((scrollTop: number) => {
     setSyncedScrollTop(scrollTop);
@@ -78,12 +90,21 @@ export default function MainLayout({ allLogs, filteredIndices, selectedId, filte
     decodePanelRef.current?.scrollTo(scrollTop);
   }, []);
 
+  const viewportEndLogIndex = useMemo(() => {
+    return getViewportEndLogIndex(syncedScrollTop, scrollInfo.clientHeight, filteredIndices);
+  }, [syncedScrollTop, scrollInfo.clientHeight, filteredIndices]);
+
+  const statusSnapshot = useMemo(() => {
+    return getStatusAtLine(statusCheckpoints, logLines, viewportEndLogIndex);
+  }, [statusCheckpoints, logLines, viewportEndLogIndex]);
+
   if (allLogs.length === 0) {
     return <div className="flex-1 flex items-center justify-center text-text-secondary text-sm">选择 TWS Log 文件开始分析</div>;
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+      <StatusPanel snapshot={statusSnapshot} onNavigateToLine={handleStatusNavigate} />
       {/* 统一表头 */}
       <div className="flex h-8 bg-bg-secondary/50 border-b border-border flex-shrink-0 select-none">
         <div className="flex items-center px-3 text-xs text-text-secondary font-medium justify-between"
@@ -116,7 +137,7 @@ export default function MainLayout({ allLogs, filteredIndices, selectedId, filte
         </div>
         <Resizer onResizeStart={startResizeThumb} />
         <div style={{ width: thumbWidth }} className="flex flex-col min-h-0">
-          <ThumbPanel allLogs={allLogs} scrollTop={syncedScrollTop} scrollHeight={scrollInfo.scrollHeight}
+          <ThumbPanel allLogs={allLogs} filteredIndices={filteredIndices} scrollTop={syncedScrollTop} scrollHeight={scrollInfo.scrollHeight}
             clientHeight={scrollInfo.clientHeight} onJumpTo={handleJumpTo} onScrollTo={handleThumbScrollTo} />
         </div>
       </div>

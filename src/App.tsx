@@ -5,7 +5,7 @@ import { useLogData } from '@/hooks/useLogData';
 import { usePanelResize } from '@/hooks/usePanelResize';
 
 export default function App() {
-  const { allLogs, filteredIndices, filterText, coreFilter, selectedId, currentFileName, decodedMatchCount,
+  const { allLogs, logLines, statusCheckpoints, filteredIndices, filterText, coreFilter, selectedId, currentFileName, decodedMatchCount,
     isLoading, loadingProgress, loadFile, filterLogs, updateCoreFilter, clearAll, selectRow } = useLogData();
 
   const { sizes, containerRef, startResizeLeft, startResizeThumb } = usePanelResize({
@@ -30,7 +30,9 @@ export default function App() {
           onClear={clearAll} 
         />
         <MainLayout 
-          allLogs={allLogs} 
+          allLogs={allLogs}
+          logLines={logLines}
+          statusCheckpoints={statusCheckpoints}
           filteredIndices={filteredIndices} 
           selectedId={selectedId}
           filterText={filterText}
