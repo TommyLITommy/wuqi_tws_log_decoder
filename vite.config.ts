@@ -10,9 +10,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // Default 5173 is in Windows excluded range 5159–5258 (Hyper-V/WSL)
+  // Avoid Windows Hyper-V/WSL reserved ranges (e.g. 2915–3014, 5159–5258)
   server: {
     host: '127.0.0.1',
-    port: 3000,
+    port: 8080,
   },
 })

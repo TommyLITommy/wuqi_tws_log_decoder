@@ -246,28 +246,27 @@ const DecodePanel = forwardRef<DecodePanelHandle, DecodePanelProps>(
 
       return (
         <div className={`h-6 flex items-center text-[13px] whitespace-nowrap border-b border-border cursor-pointer gap-2 hover:bg-bg-secondary ${isSelected ? 'bg-selected-dark' : ''}`}
-          onClick={() => onSelectRow(log.id, filteredIdx)}
-          title={`${decoded.name} | ${decoded.desc}`}>
+          onClick={() => onSelectRow(log.id, filteredIdx)}>
           
           <div className={`w-[3px] h-full flex-shrink-0 mr-2 ${isSelected ? 'bg-accent-yellow' : 'bg-transparent'}`} />
           
-          <Tag color={tagColor} className="text-[10px] m-0 leading-none uppercase font-mono">
+          <Tag color={tagColor} className="text-[10px] m-0 leading-none uppercase font-mono flex-shrink-0">
             {decoded.badge}
           </Tag>
           
-          <span className="text-accent-yellow text-[11px] font-mono">{decoded.rawValue}</span>
+          <span className="text-accent-yellow text-[11px] font-mono flex-shrink-0">{decoded.rawValue}</span>
           
-          <span className="text-accent-green font-medium text-xs truncate max-w-[200px]">
+          <span className="text-accent-green font-medium text-xs flex-shrink-0">
             {decoded.name}
           </span>
           
-          <span className="text-text-secondary text-[11px] truncate max-w-[250px]">{decoded.desc}</span>
+          <span className="text-text-secondary text-[11px] flex-shrink-0">{decoded.desc}</span>
         </div>
       );
     }, [allLogs, filteredIndices, selectedId, onSelectRow]);
 
     return (
-      <div className="flex flex-col h-full bg-bg-primary">
+      <div className="flex flex-col h-full min-h-0 bg-bg-primary">
         <VirtualList ref={listRef} totalItems={filteredIndices.length} renderItem={renderRow}
           scrollTop={scrollTop} onScroll={onScroll} className="flex-1" />
       </div>

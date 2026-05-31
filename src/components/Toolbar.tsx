@@ -1,10 +1,12 @@
 import { useRef, useCallback } from 'react';
-import { Button, Input, Space, Tooltip, Progress } from 'antd';
+import { Button, Input, Space, Tooltip, Progress, Checkbox } from 'antd';
 import { FolderOpenOutlined, ClearOutlined, LoadingOutlined } from '@ant-design/icons';
+import type { CoreFilter } from '@/hooks/useLogData';
 
 interface ToolbarProps {
   fileName: string;
   filterText: string;
+  coreFilter: CoreFilter;
   totalLines: number;
   filteredLines: number;
   decodedMatchCount: number;
@@ -12,11 +14,12 @@ interface ToolbarProps {
   loadingProgress: number;
   onLoadFile: (file: File) => void;
   onFilterChange: (text: string) => void;
+  onCoreFilterChange: (key: keyof CoreFilter, value: boolean) => void;
   onClear: () => void;
 }
 
-export default function Toolbar({ fileName, filterText, totalLines, filteredLines, decodedMatchCount,
-  isLoading, loadingProgress, onLoadFile, onFilterChange, onClear }: ToolbarProps) {
+export default function Toolbar({ fileName, filterText, coreFilter, totalLines, filteredLines, decodedMatchCount,
+  isLoading, loadingProgress, onLoadFile, onFilterChange, onCoreFilterChange, onClear }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +62,26 @@ export default function Toolbar({ fileName, filterText, totalLines, filteredLine
       </Tooltip>
       <Input placeholder="过滤日志..." value={filterText} onChange={(e) => onFilterChange(e.target.value)}
         className="w-[300px]" style={{ background: '#0f172a', borderColor: '#475569', color: '#e2e8f0' }} allowClear />
+      <Space className="text-xs text-text-primary flex-shrink-0 [&_.ant-checkbox-wrapper]:text-text-primary [&_.ant-checkbox-label]:text-text-primary">
+        <Checkbox
+          checked={coreFilter.showAcore}
+          onChange={(e) => onCoreFilterChange('showAcore', e.target.checked)}
+        >
+          Acore
+        </Checkbox>
+        <Checkbox
+          checked={coreFilter.showBcore}
+          onChange={(e) => onCoreFilterChange('showBcore', e.target.checked)}
+        >
+          Bcore
+        </Checkbox>
+        <Checkbox
+          checked={coreFilter.showDcore}
+          onChange={(e) => onCoreFilterChange('showDcore', e.target.checked)}
+        >
+          Dcore
+        </Checkbox>
+      </Space>
       <Space className="text-xs text-text-secondary ml-auto flex-shrink-0">
         <span className="whitespace-nowrap">总行: <span className="text-text-primary font-mono">{totalLines?.toLocaleString()}</span></span>
         <span className="whitespace-nowrap">过滤: <span className="text-text-primary font-mono">{filteredLines?.toLocaleString()}</span></span>

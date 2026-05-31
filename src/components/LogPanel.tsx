@@ -118,6 +118,12 @@ function highlightText(text: string, patterns: { regex: RegExp; colorIndex: numb
   return html;
 }
 
+const DECODED_ROW_BG: Record<string, string> = {
+  hci: 'bg-match-hci-bg hover:bg-match-hci-hover',
+  iap2: 'bg-match-iap2-bg hover:bg-match-iap2-hover',
+};
+const DECODED_ROW_BG_DEFAULT = 'bg-match-decoded-bg hover:bg-match-decoded-hover';
+
 const LogPanel = forwardRef<LogPanelHandle, LogPanelProps>(
   ({ allLogs, filteredIndices, selectedId, filterText, scrollTop, onScroll, onSelectRow }, ref) => {
     const listRef = useRef<VirtualListHandle>(null);
@@ -136,18 +142,28 @@ const LogPanel = forwardRef<LogPanelHandle, LogPanelProps>(
 
       const isSelected = selectedId === log.id;
       const rawHtml = highlightText(log.raw, patterns);
+      const decodedBg = log.decoded
+        ? (DECODED_ROW_BG[log.decoded.badge] ?? DECODED_ROW_BG_DEFAULT)
+        : '';
+      const lineNumber = logIdx + 1;
 
       return (
-        <div className={`h-6 flex items-center text-[13px] whitespace-nowrap border-b border-border-light cursor-pointer bg-bg-panel hover:bg-gray-100 ${isSelected ? 'bg-selected' : ''}`}
+        <div
+          className={`relative h-6 flex items-center text-[13px] whitespace-nowrap border-b border-border-light cursor-pointer ${
+            isSelected ? 'bg-selected' : decodedBg || 'bg-bg-panel hover:bg-gray-100'
+          }`}
           onClick={() => onSelectRow(log.id, filteredIdx)}>
-          <div className={`w-[3px] h-full flex-shrink-0 mr-2 ${isSelected ? 'bg-accent-blue' : 'bg-transparent'}`} />
-          <span className="font-mono text-text-dark" dangerouslySetInnerHTML={{ __html: rawHtml }} />
+          <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${isSelected ? 'bg-accent-blue' : 'bg-transparent'}`} />
+          <span className="w-9 flex-shrink-0 text-right pr-1 text-[11px] text-gray-400 border-r border-border-light select-none tabular-nums">
+            {lineNumber}
+          </span>
+          <span className="font-mono text-text-dark pl-1" dangerouslySetInnerHTML={{ __html: rawHtml }} />
         </div>
       );
     }, [allLogs, filteredIndices, selectedId, patterns, onSelectRow]);
 
     return (
-      <div className="flex flex-col h-full bg-bg-panel">
+      <div className="flex flex-col h-full min-h-0 bg-bg-panel">
         <VirtualList ref={listRef} totalItems={filteredIndices.length} renderItem={renderRow}
           scrollTop={scrollTop} onScroll={onScroll} className="flex-1" />
       </div>

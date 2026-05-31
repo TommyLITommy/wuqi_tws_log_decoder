@@ -8,6 +8,31 @@ const READER_CHUNK_SIZE = 1024 * 1024; // 1MB分块读取
 const FILE_ENCODING = 'utf-8';
 const FILTER_REGEX_FLAGS = 'i'; // 不区分大小写
 
+export interface CoreFilter {
+  showAcore: boolean;
+  showBcore: boolean;
+  showDcore: boolean;
+}
+
+const DEFAULT_CORE_FILTER: CoreFilter = {
+  showAcore: true,
+  showBcore: true,
+  showDcore: true,
+};
+
+/** 从 [A-XXX]、[B-XXX]、[D-XXX] 识别日志所属 core */
+function getLogCoreType(raw: string): 'A' | 'B' | 'D' | null {
+  const match = raw.match(/\[(A|B|D)-/i);
+  return match ? (match[1].toUpperCase() as 'A' | 'B' | 'D') : null;
+}
+
+function isCoreVisible(coreType: 'A' | 'B' | 'D' | null, coreFilter: CoreFilter): boolean {
+  if (coreType === null) return true;
+  if (coreType === 'A') return coreFilter.showAcore;
+  if (coreType === 'B') return coreFilter.showBcore;
+  return coreFilter.showDcore;
+}
+
 /**
  * 日志数据管理Hook
  * 功能：大文件日志加载、分块解析、智能过滤、状态管理
@@ -17,6 +42,7 @@ export function useLogData() {
   const [allLogs, setAllLogs] = useState<LogEntry[]>([]);
   const [filteredIndices, setFilteredIndices] = useState<number[]>([]);
   const [filterText, setFilterText] = useState('');
+  const [coreFilter, setCoreFilter] = useState<CoreFilter>(DEFAULT_CORE_FILTER);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [currentFileName, setCurrentFileName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -81,6 +107,33 @@ export function useLogData() {
            ));
   }, []);
 
+  const computeFilteredIndices = useCallback((
+    logs: LogEntry[],
+    searchText: string,
+    cores: CoreFilter
+  ): number[] => {
+    const trimmedText = searchText.trim();
+    const regex = trimmedText ? buildFilterRegex(trimmedText) : null;
+
+    return logs
+      .map((_, index) => index)
+      .filter(index => {
+        const log = logs[index];
+        if (!isCoreVisible(getLogCoreType(log.raw), cores)) return false;
+        if (!trimmedText) return true;
+        return isLogMatched(log, trimmedText, regex);
+      });
+  }, [buildFilterRegex, isLogMatched]);
+
+  const reapplyFilters = useCallback((
+    logs: LogEntry[],
+    searchText: string,
+    cores: CoreFilter
+  ) => {
+    setFilteredIndices(computeFilteredIndices(logs, searchText, cores));
+    setSelectedId(null);
+  }, [computeFilteredIndices]);
+
   // ==================== 核心业务函数 ====================
   /**
    * 分块加载并解析日志文件
@@ -132,7 +185,8 @@ export function useLogData() {
 
         // 更新状态
         setAllLogs(parsedLogs);
-        setFilteredIndices(parsedLogs.map((_, index) => index));
+        setCoreFilter(DEFAULT_CORE_FILTER);
+        setFilteredIndices(computeFilteredIndices(parsedLogs, '', DEFAULT_CORE_FILTER));
         setSelectedId(null);
       } catch (error) {
         console.error('日志解析失败：', error);
@@ -154,31 +208,23 @@ export function useLogData() {
 
     // 开始读取第一块
     readNextChunk();
-  }, []);
+  }, [computeFilteredIndices]);
 
   /**
    * 日志过滤搜索
    */
   const filterLogs = useCallback((searchText: string) => {
     setFilterText(searchText);
-    const trimmedText = searchText.trim();
+    reapplyFilters(allLogs, searchText, coreFilter);
+  }, [allLogs, coreFilter, reapplyFilters]);
 
-    // 空文本：显示全部
-    if (!trimmedText) {
-      setFilteredIndices(allLogs.map((_, index) => index));
-      setSelectedId(null);
-      return;
-    }
-
-    // 构建正则并过滤
-    const regex = buildFilterRegex(trimmedText);
-    const matchedIndices = allLogs
-      .map((_, index) => index)
-      .filter(index => isLogMatched(allLogs[index], trimmedText, regex));
-
-    setFilteredIndices(matchedIndices);
-    setSelectedId(null);
-  }, [allLogs, buildFilterRegex, isLogMatched]);
+  const updateCoreFilter = useCallback((key: keyof CoreFilter, value: boolean) => {
+    setCoreFilter(prev => {
+      const next = { ...prev, [key]: value };
+      reapplyFilters(allLogs, filterText, next);
+      return next;
+    });
+  }, [allLogs, filterText, reapplyFilters]);
 
   /**
    * 清空所有数据
@@ -187,6 +233,7 @@ export function useLogData() {
     setAllLogs([]);
     setFilteredIndices([]);
     setFilterText('');
+    setCoreFilter(DEFAULT_CORE_FILTER);
     setSelectedId(null);
     setCurrentFileName('');
     setIsLoading(false);
@@ -225,6 +272,7 @@ export function useLogData() {
     // 过滤状态
     filteredIndices,
     filterText,
+    coreFilter,
     // 选中状态
     selectedId,
     // 文件信息
@@ -237,6 +285,7 @@ export function useLogData() {
     // 操作方法
     loadFile,
     filterLogs,
+    updateCoreFilter,
     clearAll,
     selectRow,
   };
