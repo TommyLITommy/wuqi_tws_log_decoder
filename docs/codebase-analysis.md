@@ -345,6 +345,7 @@ App
 | 文档 | 内容 |
 |------|------|
 | 本文 `docs/codebase-analysis.md` | 仓库架构与学习路线 |
+| `docs/typescript-notes.md` | 本项目涉及的 TypeScript 知识点 |
 | `docs/debug-outline.md` | 组件边框调试（悬浮 CSS 开关）实现思路 |
 | `docs/app_bt_enter_ag_pairing.md` | 进入 AG 配对相关日志/流程分析 |
 | `README.md` | Vite 模板说明（偏脚手架，业务以本文为准） |
