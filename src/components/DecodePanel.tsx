@@ -268,7 +268,7 @@ const DecodePanel = forwardRef<DecodePanelHandle, DecodePanelProps>(
     }, [allLogs, filteredIndices, selectedId, onSelectRow]);
 
     return (
-      <div className="flex flex-col h-full min-h-0 bg-bg-primary">
+      <div data-debug-component="DecodePanel" className="flex flex-col h-full min-h-0 bg-bg-primary">
         <VirtualList ref={listRef} totalItems={filteredIndices.length} renderItem={renderRow}
           scrollTop={scrollTop} onScroll={onScroll} className="flex-1" />
       </div>

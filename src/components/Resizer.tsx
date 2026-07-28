@@ -12,7 +12,10 @@ export default function Resizer({ onResizeStart, className = '' }: ResizerProps)
   }, [onResizeStart]);
 
   return (
-    <div className={`w-[6px] bg-border hover:bg-accent-blue cursor-col-resize relative flex-shrink-0 transition-colors ${className}`}
-      onMouseDown={handleMouseDown} />
+    <div
+      data-debug-component="Resizer"
+      className={`w-[6px] bg-border hover:bg-accent-blue cursor-col-resize relative flex-shrink-0 transition-colors ${className}`}
+      onMouseDown={handleMouseDown}
+    />
   );
 }

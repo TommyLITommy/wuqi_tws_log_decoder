@@ -29,7 +29,7 @@ export default function Toolbar({ fileName, filterText, coreFilter, totalLines, 
   }, [onLoadFile]);
 
   return (
-    <div className="h-12 bg-bg-secondary border-b border-border flex items-center px-4 gap-4 flex-shrink-0 select-none whitespace-nowrap">
+    <div data-debug-component="Toolbar" className="h-12 bg-bg-secondary border-b border-border flex items-center px-4 gap-4 flex-shrink-0 select-none whitespace-nowrap">
       <input ref={fileInputRef} type="file" accept=".log,.txt,.csv" onChange={handleFileChange} className="hidden" />
       <Button 
         type="primary" 

@@ -92,6 +92,7 @@ const VirtualList = forwardRef<VirtualListHandle, VirtualListProps>(
     return (
       <div
         ref={containerRef}
+        data-debug-component="VirtualList"
         className={`overflow-auto relative min-h-0 ${className}`}
         onScroll={handleScroll}
       >

@@ -33,3 +33,40 @@ body {
   height: 100vh;
   width: 100vw;
 }
+
+/* ---- Debug outline mode (toggle via floating CSS button) ---- */
+.debug-outline-on [data-debug-component] {
+  outline: 2px solid var(--debug-outline-color, #f59e0b);
+  outline-offset: -2px;
+  position: relative;
+}
+
+.debug-outline-on [data-debug-component]::after {
+  content: attr(data-debug-component);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 700;
+  font-family: 'Consolas', 'Monaco', monospace;
+  color: #0f172a;
+  background: var(--debug-outline-color, #f59e0b);
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0.92;
+}
+
+.debug-outline-on [data-debug-component="App"] { --debug-outline-color: #94a3b8; }
+.debug-outline-on [data-debug-component="Toolbar"] { --debug-outline-color: #60a5fa; }
+.debug-outline-on [data-debug-component="MainLayout"] { --debug-outline-color: #a78bfa; }
+.debug-outline-on [data-debug-component="StatusPanel"] { --debug-outline-color: #34d399; }
+.debug-outline-on [data-debug-component="LogPanel"] { --debug-outline-color: #f472b6; }
+.debug-outline-on [data-debug-component="DecodePanel"] { --debug-outline-color: #fbbf24; }
+.debug-outline-on [data-debug-component="ThumbPanel"] { --debug-outline-color: #2dd4bf; }
+.debug-outline-on [data-debug-component="Resizer"] { --debug-outline-color: #fb7185; }
+.debug-outline-on [data-debug-component="VirtualList"] { --debug-outline-color: #818cf8; }
+.debug-outline-on [data-debug-component="PanelHeader"] { --debug-outline-color: #c084fc; }
+.debug-outline-on [data-debug-component="ContentRow"] { --debug-outline-color: #38bdf8; }

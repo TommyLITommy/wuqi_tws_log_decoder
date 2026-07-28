@@ -135,7 +135,7 @@ export default function StatusPanel({ snapshot, onNavigateToLine }: StatusPanelP
   const showSysState = snapshot.sysStateLabels.length > 0 && snapshot.sysStateLabels[0] !== 'none';
 
   return (
-    <div className="flex flex-shrink-0 bg-bg-secondary/80 border-b border-border">
+    <div data-debug-component="StatusPanel" className="flex flex-shrink-0 bg-bg-secondary/80 border-b border-border">
       <div className={META_COL_CLASS}>
         截止 L{snapshot.asOfLine.toLocaleString()}
       </div>

@@ -319,7 +319,7 @@ const LogPanel = forwardRef<LogPanelHandle, LogPanelProps>(
     }, [allLogs, filteredIndices, selectedId, patterns, hasHighlight, onSelectRow]);
 
     return (
-      <div ref={panelRef} className="relative flex flex-col h-full min-h-0 bg-bg-panel">
+      <div ref={panelRef} data-debug-component="LogPanel" className="relative flex flex-col h-full min-h-0 bg-bg-panel">
         <VirtualList ref={listRef} totalItems={filteredIndices.length} renderItem={renderRow}
           scrollTop={scrollTop} onScroll={onScroll} className="flex-1 select-text" />
 

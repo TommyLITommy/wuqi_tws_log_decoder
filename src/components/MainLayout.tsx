@@ -99,14 +99,14 @@ export default function MainLayout({ allLogs, logLines, statusCheckpoints, filte
   }, [statusCheckpoints, logLines, viewportEndLogIndex]);
 
   if (allLogs.length === 0) {
-    return <div className="flex-1 flex items-center justify-center text-text-secondary text-sm">选择 TWS Log 文件开始分析</div>;
+    return <div data-debug-component="MainLayout" className="flex-1 flex items-center justify-center text-text-secondary text-sm">选择 TWS Log 文件开始分析</div>;
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+    <div data-debug-component="MainLayout" className="flex-1 flex flex-col overflow-hidden min-h-0">
       <StatusPanel snapshot={statusSnapshot} onNavigateToLine={handleStatusNavigate} />
       {/* 统一表头 */}
-      <div className="flex h-8 bg-bg-secondary/50 border-b border-border flex-shrink-0 select-none">
+      <div data-debug-component="PanelHeader" className="flex h-8 bg-bg-secondary/50 border-b border-border flex-shrink-0 select-none">
         <div className="flex items-center px-3 text-xs text-text-secondary font-medium justify-between"
           style={{ width: `${leftWidth}%` }}>
           <span>原始日志</span>
@@ -124,7 +124,7 @@ export default function MainLayout({ allLogs, logLines, statusCheckpoints, filte
       </div>
 
       {/* 内容区域 */}
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div data-debug-component="ContentRow" className="flex flex-1 min-h-0 overflow-hidden">
         <div style={{ width: `${leftWidth}%` }} className="flex flex-col min-h-0 min-w-0">
           <LogPanel ref={leftPanelRef} allLogs={allLogs} filteredIndices={filteredIndices}
             selectedId={selectedId} filterText={filterText} scrollTop={syncedScrollTop} 

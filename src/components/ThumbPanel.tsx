@@ -276,6 +276,7 @@ export default function ThumbPanel({
   return (
     <div
       ref={thumbContentRef}
+      data-debug-component="ThumbPanel"
       className="flex-1 relative overflow-hidden cursor-crosshair"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setTooltip(prev => ({ ...prev, visible: false }))}
