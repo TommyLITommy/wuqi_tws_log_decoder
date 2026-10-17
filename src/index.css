@@ -63,6 +63,7 @@ body {
 .debug-outline-on [data-debug-component="Toolbar"] { --debug-outline-color: #60a5fa; }
 .debug-outline-on [data-debug-component="MainLayout"] { --debug-outline-color: #a78bfa; }
 .debug-outline-on [data-debug-component="StatusPanel"] { --debug-outline-color: #34d399; }
+.debug-outline-on [data-debug-component="StatusTimeline"] { --debug-outline-color: #2dd4bf; }
 .debug-outline-on [data-debug-component="LogPanel"] { --debug-outline-color: #f472b6; }
 .debug-outline-on [data-debug-component="DecodePanel"] { --debug-outline-color: #fbbf24; }
 .debug-outline-on [data-debug-component="ThumbPanel"] { --debug-outline-color: #2dd4bf; }

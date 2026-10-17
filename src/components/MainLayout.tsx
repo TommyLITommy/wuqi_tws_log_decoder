@@ -3,6 +3,7 @@ import LogPanel from '@/components/LogPanel';
 import DecodePanel from '@/components/DecodePanel';
 import ThumbPanel from '@/components/ThumbPanel';
 import StatusPanel from '@/components/StatusPanel';
+import StatusTimeline from '@/components/StatusTimeline';
 import Resizer from '@/components/Resizer';
 import type { LogEntry, StatusCheckpoint } from '@/types';
 import type { LogPanelHandle } from '@/components/LogPanel';
@@ -105,6 +106,11 @@ export default function MainLayout({ allLogs, logLines, statusCheckpoints, filte
   return (
     <div data-debug-component="MainLayout" className="flex-1 flex flex-col overflow-hidden min-h-0">
       <StatusPanel snapshot={statusSnapshot} onNavigateToLine={handleStatusNavigate} />
+      <StatusTimeline
+        logLines={logLines}
+        viewportLineIndex={viewportEndLogIndex}
+        onNavigateToLine={handleStatusNavigate}
+      />
       {/* 统一表头 */}
       <div data-debug-component="PanelHeader" className="flex h-8 bg-bg-secondary/50 border-b border-border flex-shrink-0 select-none">
         <div className="flex items-center px-3 text-xs text-text-secondary font-medium justify-between"

@@ -204,3 +204,13 @@ export interface StatusCheckpoint {
   lineIndex: number;
   snapshot: DeviceStatusSnapshot;
 }
+
+export interface LogEvent {
+  id: string;
+  type: string;
+  timestamp: number;
+  lineIndex: number;
+  color: string;
+  icon: string;
+  description?: string;
+}
